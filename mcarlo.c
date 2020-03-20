@@ -19,7 +19,7 @@ double random_double(); // returns double
 
 int sum = 0; //sum variable
 
-#define NUM_THREADS 2 // the number of threads
+#define NUM_THREADS 2 // the number of threads. doesn't currently work
 
 int main(int argc, char** argv)
 {
@@ -36,19 +36,31 @@ int main(int argc, char** argv)
 
     pthread_t tid[NUM_THREADS]; // the threads. default is 2. 
     int iterations = atoi(argv[1]); // number of input
-    int *arg = malloc(sizeof(*arg)); // the argv[1]. have to do this so that we can divide the input evenly between all threads.
-    *arg = iterations / NUM_THREADS;
+    
+    int *arg1 = malloc(sizeof(*arg1)); // the argv[1]. have to do this so that we can divide the input evenly between all threads.
+    int *arg2 = malloc(sizeof(*arg2)); // the argv[2]. have to do this so that we can divide the input evenly between all threads.
+    *arg1 = iterations / NUM_THREADS;
+    *arg2 = iterations / NUM_THREADS;
+    
   
-    for (int i = 0; i < iterations; i++) { // creates the threads
-        pthread_create(&tid[i], NULL, runner, arg);
+    /*for (int i = 0; i < iterations; i++) { // creates the threads
+        pthread_create(&tid[i], NULL, runner, &args[i]);
     }
     for (int i = 0; i < iterations; i++) { // joins the threads
         pthread_join(tid[i], NULL);
-    }
+    }*/
+
+    pthread_create(&tid[0], NULL, runner, arg1);
+    pthread_create(&tid[1], NULL, runner, arg2);
+    
+    pthread_join(tid[0], NULL);
+    pthread_join(tid[1], NULL);
  
     printf("sum = %f\n",(4.0 * sum / iterations)); // prints the sum of the thread results
     
-    free(arg); // frees the memory we allocated earlier
+    free(arg1); // frees the memory we allocated earlier
+    free(arg2);
+
     return 0;
     
     
